@@ -1568,32 +1568,35 @@ ZEND_FUNCTION(function_exists)
    Creates an alias for user defined class */
 ZEND_FUNCTION(class_alias)
 {
-	zend_string *class_name;
-	char *alias_name;
+	zval *class_name;
+	zend_string *alias_name;
 	zend_class_entry *ce;
-	size_t alias_name_len;
 	zend_bool autoload = 1;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "Ss|b", &class_name, &alias_name, &alias_name_len, &autoload) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "zS|b", &class_name, &alias_name, &autoload) == FAILURE) {
 		return;
 	}
 
-	ce = zend_lookup_class_ex(class_name, NULL, autoload);
+	if (Z_TYPE_P(class_name) == IS_OBJECT) {
+		ce = Z_OBJCE_P(class_name);
+	} else {
+		convert_to_string_ex(class_name);
+		ce = zend_lookup_class_ex(Z_STR_P(class_name), NULL, autoload);
+		if (!ce) {
+			zend_error(E_WARNING, "Class '%s' not found", Z_STRVAL_P(class_name));
+			RETURN_FALSE;
+		}
+	}
 
-	if (ce) {
-		if (ce->type == ZEND_USER_CLASS) {
-			if (zend_register_class_alias_ex(alias_name, alias_name_len, ce) == SUCCESS) {
-				RETURN_TRUE;
-			} else {
-				zend_error(E_WARNING, "Cannot declare %s %s, because the name is already in use", zend_get_object_type(ce), alias_name);
-				RETURN_FALSE;
-			}
+	if (ce->type == ZEND_USER_CLASS) {
+		if (zend_register_class_alias_ex(ZSTR_VAL(alias_name), ZSTR_LEN(alias_name), ce) == SUCCESS) {
+			RETURN_TRUE;
 		} else {
-			zend_error(E_WARNING, "First argument of class_alias() must be a name of user defined class");
+			zend_error(E_WARNING, "Cannot declare %s %s, because the name is already in use", zend_get_object_type(ce), ZSTR_VAL(alias_name));
 			RETURN_FALSE;
 		}
 	} else {
-		zend_error(E_WARNING, "Class '%s' not found", ZSTR_VAL(class_name));
+		zend_error(E_WARNING, "First argument of class_alias() must be an instance or name of a user defined class");
 		RETURN_FALSE;
 	}
 }
