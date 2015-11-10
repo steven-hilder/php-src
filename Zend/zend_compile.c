@@ -1393,7 +1393,7 @@ static zend_bool zend_try_compile_const_expr_resolve_class_name(zval *zv, zend_a
 	switch (fetch_type) {
 		case ZEND_FETCH_CLASS_SELF:
 			if (constant || (CG(active_class_entry) && zend_is_scope_known())) {
-				ZVAL_STR_COPY(zv, CG(active_class_entry)->name);
+				ZVAL_STRING(zv, ZSTR_VAL(CG(active_class_entry)->name));
 			} else {
 				ZVAL_NULL(zv);
 			}
@@ -5809,7 +5809,7 @@ static zend_bool zend_try_ct_eval_magic_const(zval *zv, zend_ast *ast) /* {{{ */
 				if ((ce->ce_flags & ZEND_ACC_TRAIT) != 0) {
 					return 0;
 				} else {
-					ZVAL_STR_COPY(zv, ce->name);
+					ZVAL_STRING(zv, ZSTR_VAL(ce->name));
 				}
 			} else {
 				ZVAL_EMPTY_STRING(zv);

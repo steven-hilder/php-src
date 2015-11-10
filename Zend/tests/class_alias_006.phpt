@@ -7,4 +7,4 @@ class_alias('stdclass', 'foo');
 
 ?>
 --EXPECTF--
-Warning: First argument of class_alias() must be a name of user defined class in %s on line %d
+Warning: First argument of class_alias() must be an instance or name of a user defined class in %s on line %d

@@ -936,14 +936,14 @@ ZEND_FUNCTION(get_class)
 
 	if (!obj) {
 		if (EG(scope)) {
-			RETURN_STR_COPY(EG(scope)->name);
+			RETURN_STRING(ZSTR_VAL(EG(scope)->name));
 		} else {
 			zend_error(E_WARNING, "get_class() called without object from outside a class");
 			RETURN_FALSE;
 		}
 	}
 
-	RETURN_STR_COPY(Z_OBJCE_P(obj)->name);
+	RETURN_STRING(ZSTR_VAL(Z_OBJCE_P(obj)->name));
 }
 /* }}} */
 
@@ -959,7 +959,7 @@ ZEND_FUNCTION(get_called_class)
 
 	called_scope = zend_get_called_scope(execute_data);
 	if (called_scope) {
-		RETURN_STR_COPY(called_scope->name);
+		RETURN_STRING(ZSTR_VAL(called_scope->name));
 	} else if (!EG(scope))  {
 		zend_error(E_WARNING, "get_called_class() called from outside a class");
 	}
@@ -981,7 +981,7 @@ ZEND_FUNCTION(get_parent_class)
 	if (!ZEND_NUM_ARGS()) {
 		ce = EG(scope);
 		if (ce && ce->parent) {
-			RETURN_STR_COPY(ce->parent->name);
+			RETURN_STRING(ZSTR_VAL(ce->parent->name));
 		} else {
 			RETURN_FALSE;
 		}
@@ -994,7 +994,7 @@ ZEND_FUNCTION(get_parent_class)
 	}
 
 	if (ce && ce->parent) {
-		RETURN_STR_COPY(ce->parent->name);
+		RETURN_STRING(ZSTR_VAL(ce->parent->name));
 	} else {
 		RETURN_FALSE;
 	}

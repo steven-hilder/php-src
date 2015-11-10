@@ -1172,7 +1172,7 @@ PHPAPI void zend_reflection_class_factory(zend_class_entry *ce, zval *object)
 	reflection_object *intern;
 	zval name;
 
-	ZVAL_STR_COPY(&name, ce->name);
+	ZVAL_STRING(&name, ZSTR_VAL(ce->name));
 	reflection_instantiate(reflection_class_ptr, object);
 	intern = Z_REFLECTION_P(object);
 	intern->ptr = ce;
@@ -3702,7 +3702,7 @@ static void reflection_class_object_ctor(INTERNAL_FUNCTION_PARAMETERS, int is_ob
 	}
 
 	if (Z_TYPE_P(argument) == IS_OBJECT) {
-		ZVAL_STR_COPY(&classname, Z_OBJCE_P(argument)->name);
+		ZVAL_STRING(&classname, ZSTR_VAL(Z_OBJCE_P(argument)->name));
 		reflection_update_property(object, "name", &classname);
 		intern->ptr = Z_OBJCE_P(argument);
 		if (is_object) {
@@ -3718,7 +3718,7 @@ static void reflection_class_object_ctor(INTERNAL_FUNCTION_PARAMETERS, int is_ob
 			return;
 		}
 
-		ZVAL_STR_COPY(&classname, ce->name);
+		ZVAL_STRING(&classname, ZSTR_VAL(ce->name));
 		reflection_update_property(object, "name", &classname);
 
 		intern->ptr = ce;
